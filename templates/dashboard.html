@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>📊 System Details</h1>
+
+<div class="flow">
+
+    <div class="card">👤 User Input</div>
+    <div class="arrow">➡️</div>
+
+    <div class="card">🧠 GenAI<br><small>Medical Report</small></div>
+    <div class="arrow">➡️</div>
+
+    <div class="card">🤖 Agentic AI<br><small>2 Agents</small></div>
+    <div class="arrow">➡️</div>
+
+    <div class="card">📋 Final Plan</div>
+
+</div>
+
+<div class="info">
+    <h3>How it Works</h3>
+    <p>
+        User enters symptoms → GenAI generates a medical report →
+        Agentic AI analyzes and creates a treatment plan →
+        Results are stored and displayed.
+    </p>
+</div>
+
+{% endblock %}

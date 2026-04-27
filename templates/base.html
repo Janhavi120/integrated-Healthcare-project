@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Healthcare AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav>
+    <h2>🏥 Healthcare AI</h2>
+    <div>
+        <a href="/">Home</a>
+        <a href="/dashboard">About</a>
+        <a href="/generate">Generate</a>
+    </div>
+</nav>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>
