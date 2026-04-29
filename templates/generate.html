@@ -3,11 +3,12 @@
 
 <h1>🤖 Generate Healthcare Plan</h1>
 
-<form method="post" class="form-box">
+<form method="post" class="form-box" onsubmit="document.getElementById('loader').style.display='block'">
     <input name="age" placeholder="Age" required>
     <input name="gender" placeholder="Gender" required>
     <textarea name="symptoms" placeholder="Enter symptoms..." required></textarea>
     <button type="submit">Generate</button>
+    <div id="loader" style="display:none; margin-top:15px; color:#00bcd4; font-weight:bold;">⏳ Generating Report...</div>
 </form>
 
 {% if report %}

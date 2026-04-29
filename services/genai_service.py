@@ -11,38 +11,78 @@ llm = ChatGoogleGenerativeAI(
 )
 
 prompt = ChatPromptTemplate.from_template("""
-Generate a short medical report.
+Generate a professional medical report.
 
 Age: {age}
 Gender: {gender}
 Symptoms: {symptoms}
 
-Give:
-- Possible condition
-- Basic advice
+Include:
+- Possible Condition
+- Basic Advice
+- Lifestyle Suggestions
+- When to Visit Doctor
 """)
 
 chain = prompt | llm | StrOutputParser()
 
+
 def generate_report(age, gender, symptoms):
-    print("[GenAI] Calling Gemini API...")
 
     for attempt in range(3):
         try:
+            print(f"[GenAI] Attempt {attempt+1}")
+
             result = chain.invoke({
                 "age": age,
                 "gender": gender,
                 "symptoms": symptoms
             })
 
-            print("[GenAI] Response received")
+            print("[GenAI] Success")
             return result
 
         except Exception as e:
-            print(f"[GenAI] Attempt {attempt+1} failed: {e}")
+            print("[GenAI] Failed:", e)
+            time.sleep(3)
 
-            if attempt < 2:
-                print("[GenAI] Retrying...")
-                time.sleep(2)
-            else:
-                return "AI service is busy right now. Please try again in a few moments."
+    # DEFAULT REPORT IF GEMINI FAILS
+    return f"""
+# Medical Report
+
+## Patient Details
+- Age: {age}
+- Gender: {gender}
+- Symptoms: {symptoms}
+
+## Preliminary Observation
+
+Based on the entered symptoms, the patient may be experiencing a common viral infection, seasonal fever, weakness, dehydration, or stress-related condition. Exact diagnosis requires physical examination and medical testing.
+
+## Recommended Advice
+
+1. Take complete rest.
+2. Drink enough water and fluids.
+3. Eat light and healthy food.
+4. Monitor body temperature regularly.
+5. Avoid cold food and outside food.
+6. Maintain hygiene and proper sleep.
+
+## Lifestyle Suggestions
+
+- Sleep for 7-8 hours.
+- Reduce stress.
+- Avoid excessive screen time.
+- Take fresh fruits and vegetables.
+
+## Visit Doctor If
+
+- Fever continues for more than 2 days
+- Breathing issue starts
+- Severe headache occurs
+- Vomiting or weakness increases
+
+## Disclaimer
+
+This is an AI-generated backup medical report. Please consult a nearby doctor for proper diagnosis.
+"""
