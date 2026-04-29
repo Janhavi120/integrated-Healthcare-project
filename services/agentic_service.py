@@ -4,60 +4,50 @@ import time
 
 def generate_plan(user_input):
 
-    for attempt in range(3):
-        try:
-            print(f"[Agentic] Attempt {attempt+1}")
+    try:
+        print("[Agentic] Calling Gemini via CrewAI...")
 
-            tasks = get_tasks(user_input)
+        tasks = get_tasks(user_input)
 
-            crew = Crew(
-                agents=[tasks[0].agent, tasks[1].agent],
-                tasks=tasks,
-                verbose=True
-            )
+        crew = Crew(
+            agents=[tasks[0].agent, tasks[1].agent],
+            tasks=tasks,
+            verbose=True
+        )
 
-            result = crew.kickoff()
+        result = crew.kickoff()
 
-            print("[Agentic] Success")
-            return str(result)
+        print("[Agentic] Success")
+        return str(result)
 
-        except Exception as e:
-            print("[Agentic] Failed:", e)
-            time.sleep(3)
+    except Exception as e:
+        print("[Agentic] Failed:", e)
+        print("[Agentic] Using default plan")
 
-    # DEFAULT PLAN IF GEMINI FAILS
-    return """
+        return """
 # Treatment Plan
 
 ## Immediate Care
 
-1. Take complete bed rest.
-2. Stay hydrated with water, ORS, juice.
-3. Use paracetamol for fever if needed.
-4. Eat simple homemade food.
+1. Take proper rest  
+2. Drink water regularly  
+3. Use fever medicine if required  
+4. Eat light homemade food
 
-## Daily Routine
+## Daily Care
 
-- Morning: Warm water + fruits
-- Afternoon: Light lunch
-- Evening: Rest
-- Night: Early sleep
+- Sleep early  
+- Avoid outside food  
+- Maintain hygiene
 
-## Safety Measures
+## Visit Doctor If
 
-- Avoid crowded places
-- Wear mask if coughing
-- Wash hands regularly
-
-## Doctor Consultation Required If
-
-- High fever continues
+- Fever continues
 - Severe cough
 - Chest pain
-- Breathing difficulty
-- Body weakness increases
+- Weakness increases
 
 ## Final Note
 
-This is an automatically generated backup treatment plan. Visit your nearby doctor or hospital for proper treatment.
+Please visit your nearby doctor or hospital.
 """

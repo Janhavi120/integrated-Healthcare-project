@@ -3,30 +3,67 @@
 
 <h1>🤖 Generate Healthcare Plan</h1>
 
-<form method="post" class="form-box" onsubmit="document.getElementById('loader').style.display='block'">
+<form id="healthForm" class="form-box">
     <input name="age" placeholder="Age" required>
     <input name="gender" placeholder="Gender" required>
     <textarea name="symptoms" placeholder="Enter symptoms..." required></textarea>
+
     <button type="submit">Generate</button>
-    <div id="loader" style="display:none; margin-top:15px; color:#00bcd4; font-weight:bold;">⏳ Generating Report...</div>
+
+    <div id="loader" style="display:none; margin-top:15px; color:#00bcd4; font-weight:bold;">
+        ⏳ Generating Report...
+    </div>
 </form>
 
-{% if report %}
-<div class="result">
-    <h2>🧾 Medical Report</h2>
-    <div class="formatted">
-    {{ report | safe }}
-</div>
-</div>
-{% endif %}
+<div id="reportResult"></div>
+<div id="planResult"></div>
 
-{% if plan %}
-<div class="result">
-    <h2>📋 Treatment Plan</h2>
-    <div class="formatted">
-    {{ plan | safe }}
-</div>
-</div>
-{% endif %}
+<script>
+document.getElementById("healthForm").addEventListener("submit", async function(e){
+    e.preventDefault();
+
+    let formData = new FormData(this);
+
+    document.getElementById("loader").style.display = "block";
+    document.getElementById("loader").innerHTML = "⏳ Generating Report...";
+
+    document.getElementById("reportResult").innerHTML = "";
+    document.getElementById("planResult").innerHTML = "";
+
+    // REPORT FIRST
+    let reportRes = await fetch("/report", {
+        method: "POST",
+        body: formData
+    });
+
+    let reportData = await reportRes.json();
+
+    document.getElementById("reportResult").innerHTML = `
+        <div class="result">
+            <h2>🧾 Medical Report</h2>
+            <div class="formatted">${reportData.report}</div>
+        </div>
+    `;
+
+    // PLAN SECOND
+    document.getElementById("loader").innerHTML = "⏳ Generating Treatment Plan...";
+
+    let planRes = await fetch("/plan", {
+        method: "POST",
+        body: formData
+    });
+
+    let planData = await planRes.json();
+
+    document.getElementById("planResult").innerHTML = `
+        <div class="result">
+            <h2>📋 Treatment Plan</h2>
+            <div class="formatted">${planData.plan}</div>
+        </div>
+    `;
+
+    document.getElementById("loader").innerHTML = "✅ Completed";
+});
+</script>
 
 {% endblock %}

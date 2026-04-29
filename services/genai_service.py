@@ -29,9 +29,8 @@ chain = prompt | llm | StrOutputParser()
 
 def generate_report(age, gender, symptoms):
 
-    for attempt in range(3):
         try:
-            print(f"[GenAI] Attempt {attempt+1}")
+            print("calling gemini API")
 
             result = chain.invoke({
                 "age": age,
@@ -43,11 +42,10 @@ def generate_report(age, gender, symptoms):
             return result
 
         except Exception as e:
-            print("[GenAI] Failed:", e)
-            time.sleep(3)
-
+           print("[GenAI] Failed:", e)
+           print("[GenAI] Using default report")
     # DEFAULT REPORT IF GEMINI FAILS
-    return f"""
+        return f"""
 # Medical Report
 
 ## Patient Details
@@ -84,5 +82,5 @@ Based on the entered symptoms, the patient may be experiencing a common viral in
 
 ## Disclaimer
 
-This is an AI-generated backup medical report. Please consult a nearby doctor for proper diagnosis.
+This is an AI-generated medical report. Please consult a nearby doctor for proper diagnosis.
 """

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from models import db, Patient, Report, Plan
 from config import DATABASE_URL
 from services.genai_service import generate_report
@@ -32,42 +32,40 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-@app.route("/generate", methods=["GET", "POST"])
+@app.route("/generate", methods=["GET"])
 def generate():
-    log("Generate route accessed")
-
-    if request.method == "POST":
-        log("Form submitted")
-
-        age = request.form["age"]
-        gender = request.form["gender"]
-        symptoms = request.form["symptoms"]
-
-        # ---- GenAI ----
-        log("Generating medical report (GenAI)...")
-        report = generate_report(age, gender, symptoms)
-        log("Medical report generated")
-
-        # ---- Agentic AI ----
-        log("Running Agentic AI...")
-        plan = generate_plan(symptoms + " " + report)
-        log("Treatment plan generated")
-
-        # ---- Format Markdown ----
-        log("Formatting output...")
-        formatted_report = markdown.markdown(report)
-        formatted_plan = markdown.markdown(plan)
-
-        log("Sending response to UI")
-
-        return render_template(
-            "generate.html",
-            report=formatted_report,
-            plan=formatted_plan
-        )
-
-    # GET request
+    log("Generate page opened")
     return render_template("generate.html", report=None, plan=None)
+
+
+# ---------- Report First ----------
+@app.route("/report", methods=["POST"])
+def report_only():
+    log("Generating medical report...")
+
+    age = request.form["age"]
+    gender = request.form["gender"]
+    symptoms = request.form["symptoms"]
+
+    report = generate_report(age, gender, symptoms)
+    formatted_report = markdown.markdown(report)
+
+    log("Medical report ready")
+    return jsonify({"report": formatted_report})
+
+
+# ---------- Plan After ----------
+@app.route("/plan", methods=["POST"])
+def plan_only():
+    log("Generating treatment plan...")
+
+    symptoms = request.form["symptoms"]
+
+    plan = generate_plan(symptoms)
+    formatted_plan = markdown.markdown(plan)
+
+    log("Treatment plan ready")
+    return jsonify({"plan": formatted_plan})
 
 
 # ---------- Run App ----------
